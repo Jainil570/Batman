@@ -1,5 +1,6 @@
 # 🦇 Batman AI — Cinematic RAG Exam Assistant
 [Demo Video](https://drive.google.com/file/d/1QF_w40aeJTePntbDqtcamDWBGT0xDK41/view?usp=sharing)
+<img width="1906" height="984" alt="image" src="https://github.com/user-attachments/assets/442e03c8-474e-40fd-9618-059cd360d122" />
 
 **Batman AI** is a premium, high-performance web application designed for students and professionals to prepare for exams. It features a stunning cinematic dark-themed UI (inspired by the aesthetics of Batman) and utilizes advanced **Retrieval-Augmented Generation (RAG)** to answer queries directly from user-uploaded PDFs.
 
@@ -13,6 +14,7 @@
 * **Document Management**: Upload massive PDFs. The backend effortlessly extracts, chunks, and indexes it via `PyMuPDF`.
 * **Streaming AI Chat**: Uses WebSockets to provide real-time token streaming back to the frontend.
 * **Microservice Architecture**: Decoupled APIs powered by FastAPI, MongoDB (NoSQL), and Redis (Caching & Rate Limiting).
+<img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/84465531-2d2d-47da-8336-bead43a886b3" />
 
 ---
 
