@@ -100,4 +100,3 @@ This app expects a `.env` file at the root. Reference `.env.example` in this rep
 
 ---
 
-> "It's not who I am underneath, but what I do that defines me."
