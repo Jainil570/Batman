@@ -184,6 +184,9 @@ async def chat_websocket(websocket: WebSocket, chat_id: str):
         while True:
             data = await websocket.receive_json()
             user_msg = data.get("content", "").strip()
+            mode = data.get("mode", "normal")
+            marks = int(data.get("marks", 0)) if data.get("marks") else None
+            easy_to_remember = data.get("easy_to_remember", False)
 
             if not user_msg:
                 continue
@@ -207,7 +210,7 @@ async def chat_websocket(websocket: WebSocket, chat_id: str):
             full_response = []
             all_sources = []
 
-            async for chunk in query_rag(user_id, doc_id, user_msg):
+            async for chunk in query_rag(user_id, doc_id, user_msg, mode=mode, marks=marks, easy_to_remember=easy_to_remember):
                 await websocket.send_json(chunk)
                 if chunk["type"] == "token":
                     full_response.append(chunk["content"])

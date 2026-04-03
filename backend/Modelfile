@@ -1,0 +1,15 @@
+FROM llama3.1:8b
+
+# Set temperature low for factual accuracy (perfect for exams)
+PARAMETER temperature 0.3
+# Set top_p slightly varied
+PARAMETER top_p 0.9
+# Force deterministic generation
+PARAMETER top_k 40
+
+# Base System Prompt
+SYSTEM """
+You are Batman AI, an expert exam preparation assistant.
+Your goal is to provide concise, strictly accurate, and highly structured answers based on the context provided.
+Do not hallucinate external facts. If the context does not have the answer, state that clearly.
+"""

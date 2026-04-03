@@ -40,6 +40,12 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [chatTitle, setChatTitle] = useState("Loading...");
   const [allChats, setAllChats] = useState<any[]>([]);
+  
+  // Student Mode State
+  const [mode, setMode] = useState<'normal' | 'student'>('normal');
+  const [marks, setMarks] = useState<number>(5);
+  const [easyToRemember, setEasyToRemember] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -72,7 +78,7 @@ export default function ChatPage() {
     const msg = input.trim();
     if (!msg || stream.isStreaming) return;
     setInput("");
-    sendMessage(msg);
+    sendMessage(msg, { mode, marks, easyToRemember });
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -299,6 +305,17 @@ export default function ChatPage() {
         .send-btn:disabled { background: rgba(255,255,255,.1); color: rgba(255,255,255,.25); cursor: default; transform: none; }
         .input-footer { text-align: center; margin-top: 8px; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,.14); }
 
+        /* ADVANCED MODE CONTROLS */
+        .mode-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 4px; }
+        .mode-left { display: flex; align-items: center; gap: 12px; }
+        .mode-right { display: flex; align-items: center; gap: 8px; }
+        .mode-tab { padding: 4px 10px; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; cursor: pointer; color: rgba(255,255,255,.4); transition: all .2s; }
+        .mode-tab.active { background: rgba(255,255,255,.12); color: #fff; }
+        .mode-tab:hover:not(.active) { color: rgba(255,255,255,.7); }
+        .marks-select { background: rgba(0,0,0,.6); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 2px 8px; font-size: 10px; outline: none; }
+        .btn-easy { padding: 4px 10px; font-size: 10px; font-weight: 600; letter-spacing: .5px; border-radius: 4px; cursor: pointer; border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.7); transition: all .2s; }
+        .btn-easy.active { background: rgba(160,255,160,.15); color: #a0ffa0; border-color: rgba(160,255,160,.3); }
+
         /* Disable tailwind prose logic interfering */
         .msg-text p { margin-bottom: 0.75em; }
         .msg-text p:last-child { margin-bottom: 0; }
@@ -476,6 +493,28 @@ export default function ChatPage() {
           {/* INPUT */}
           <div className="input-area">
             <div className="input-inner">
+              <div className="mode-controls">
+                <div className="mode-left">
+                  <div className={`mode-tab ${mode === 'normal' ? 'active' : ''}`} onClick={() => setMode('normal')}>Normal Mode</div>
+                  <div className={`mode-tab ${mode === 'student' ? 'active' : ''}`} onClick={() => setMode('student')}>Student Mode</div>
+                </div>
+                {mode === 'student' && (
+                  <div className="mode-right">
+                    <select className="marks-select" value={marks} onChange={(e) => setMarks(Number(e.target.value))}>
+                      <option value={1}>1 Mark</option>
+                      <option value={2}>2 Marks</option>
+                      <option value={5}>5 Marks</option>
+                      <option value={7}>7 Marks</option>
+                    </select>
+                    <button 
+                      className={`btn-easy ${easyToRemember ? 'active' : ''}`}
+                      onClick={() => setEasyToRemember(!easyToRemember)}
+                    >
+                      ★ Easy to Remember
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="input-wrap">
                 <textarea 
                   className="chat-textarea"
@@ -483,7 +522,7 @@ export default function ChatPage() {
                   value={input}
                   onChange={autoResize}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask about your document…" 
+                  placeholder={mode === 'student' ? `Ask an exam question (${marks} Marks)...` : "Ask about your document..."} 
                   rows={1} 
                 />
                 <button 

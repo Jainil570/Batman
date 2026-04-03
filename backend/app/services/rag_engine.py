@@ -37,14 +37,19 @@ async def retrieve_context(
 
 
 async def query_rag(
-    user_id: str, doc_id: str, query: str
+    user_id: str, doc_id: str, query: str, mode: str = "normal", marks: int = None, easy_to_remember: bool = False
 ) -> AsyncGenerator[dict, None]:
     """
     Full RAG pipeline with streaming.
     Yields dicts: {"type": "sources"|"token"|"done", ...}
     """
     # Step 1: Retrieve context from Docker embedding service
-    context, sources = await retrieve_context(user_id, doc_id, query)
+    # Token Optimization: If only 1-2 marks requested, we don't need 5 large chunks
+    top_k = 5
+    if mode == "student" and marks in [1, 2]:
+        top_k = 2
+
+    context, sources = await retrieve_context(user_id, doc_id, query, top_k=top_k)
 
     # Yield sources first
     if sources:
@@ -63,7 +68,7 @@ async def query_rag(
         return
 
     # Step 2: Stream LLM response with retrieved context (Ollama Docker)
-    async for token in stream_llm_response(query, context):
+    async for token in stream_llm_response(query, context, mode=mode, marks=marks, easy_to_remember=easy_to_remember):
         yield {"type": "token", "content": token}
 
     yield {"type": "done"}

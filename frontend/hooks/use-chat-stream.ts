@@ -96,7 +96,7 @@ export function useChatStream(chatId: string) {
 
   // Send message
   const sendMessage = useCallback(
-    (content: string) => {
+    (content: string, options?: { mode?: 'normal' | 'student'; marks?: number; easyToRemember?: boolean }) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
 
       // Add user message optimistically
@@ -105,7 +105,14 @@ export function useChatStream(chatId: string) {
       streamRef.current = { isStreaming: true, currentTokens: "", currentSources: [] };
       setStream(streamRef.current);
 
-      wsRef.current.send(JSON.stringify({ content }));
+      const payload = {
+        content,
+        mode: options?.mode || 'normal',
+        marks: options?.marks || null,
+        easy_to_remember: options?.easyToRemember || false,
+      };
+
+      wsRef.current.send(JSON.stringify(payload));
     },
     []
   );
