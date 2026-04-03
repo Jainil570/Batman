@@ -1,5 +1,6 @@
 # 🦇 Batman AI — Cinematic RAG Exam Assistant
-
+[Demo video](https://drive.google.com/file/d/1hQltSBumiNIkXFSxWnH61BktgogXt89i/view?usp=sharing)
+<img width="1906" height="984" alt="Screenshot 2026-04-02 193209" src="https://github.com/user-attachments/assets/98d5fdaf-a1db-45e3-95d9-6c4b11101eb3" />
 
 **Batman AI** is a premium, high-performance web application designed for students and professionals to prepare for exams. It features a stunning cinematic dark-themed UI (Batman) and utilizes advanced **Retrieval-Augmented Generation (RAG)** to answer queries directly from user-uploaded PDFs.
 
@@ -23,12 +24,14 @@
 - **Framework**: Next.js 15 (React 19)
 - **Styling**: TailwindCSS & Custom Vanilla CSS styles for complex effects
 - **Components**: Shadcn/UI, Radix UI, Framer Motion
+<img width="1919" height="983" alt="Screenshot 2026-04-03 220114" src="https://github.com/user-attachments/assets/57f2e68c-e436-4c6d-9d29-3f344d603850" />
 
 ### Backend
 - **Framework**: FastAPI (Python)
 - **Database**: MongoDB (Motor Async Driver)
 - **Caching/Rate Limit**: Redis (aioredis)
 - **WebSockets**: Streaming chat architecture
+<img width="1914" height="203" alt="Screenshot 2026-04-03 215903" src="https://github.com/user-attachments/assets/5f3163a5-b8ef-4b22-a468-f6063a0bcb50" />
 
 ### AI & Embeddings
 - **LLM**: Ollama (`llama3.1:8b` and others)
