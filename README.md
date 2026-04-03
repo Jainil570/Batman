@@ -1,7 +1,7 @@
 # 🦇 Batman AI — Cinematic RAG Exam Assistant
 
 
-**Batman AI** is a premium, high-performance web application designed for students and professionals to prepare for exams. It features a stunning cinematic dark-themed UI (inspired by the aesthetics of Batman) and utilizes advanced **Retrieval-Augmented Generation (RAG)** to answer queries directly from user-uploaded PDFs.
+**Batman AI** is a premium, high-performance web application designed for students and professionals to prepare for exams. It features a stunning cinematic dark-themed UI (Batman) and utilizes advanced **Retrieval-Augmented Generation (RAG)** to answer queries directly from user-uploaded PDFs.
 
 ---
 
