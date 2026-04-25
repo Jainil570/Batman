@@ -7,6 +7,16 @@ import { docsApi, chatApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { Trash2, MessageSquare, FileText } from "lucide-react";
 
+const DEMO_DOCS = [
+  { id: "demo-doc-1", filename: "Machine_Learning_Notes.pdf", page_count: 42, chunk_count: 128 },
+  { id: "demo-doc-2", filename: "Data_Structures_Guide.pdf", page_count: 78, chunk_count: 245 },
+  { id: "demo-doc-3", filename: "Neural_Networks_Paper.pdf", page_count: 15, chunk_count: 47 },
+];
+const DEMO_CHATS = [
+  { id: "demo-chat-1", title: "ML Notes — Key Concepts", message_count: 12, updated_at: new Date().toISOString() },
+  { id: "demo-chat-2", title: "DSA Complexity Analysis", message_count: 8, updated_at: new Date().toISOString() },
+];
+
 export default function DashboardPage() {
   const { user, token } = useSession(true);
   const router = useRouter();
@@ -15,60 +25,52 @@ export default function DashboardPage() {
   const [loadingData, setLoadingData] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isGuest = token === "mock-guest-token-abc";
 
   const fetchData = useCallback(async () => {
-    if (!token) return;
-    try {
-      const [docs, chatList] = await Promise.all([
-        docsApi.list(token),
-        chatApi.list(token),
-      ]);
-      setDocuments(docs as any[]);
-      setChats(chatList as any[]);
-    } catch (err) {
-      console.error("Failed to load data:", err);
-    } finally {
-      setLoadingData(false);
+    if (!token || isGuest) {
+      setDocuments(DEMO_DOCS); setChats(DEMO_CHATS); setLoadingData(false); return;
     }
-  }, [token]);
+    try {
+      const [docs, chatList] = await Promise.all([docsApi.list(token), chatApi.list(token)]);
+      setDocuments(docs as any[]); setChats(chatList as any[]);
+    } catch {
+      setDocuments(DEMO_DOCS); setChats(DEMO_CHATS);
+    } finally { setLoadingData(false); }
+  }, [token, isGuest]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleUpload = async (file: File) => {
-    if (!token) return;
-    await docsApi.upload(file, token);
-    await fetchData();
+    if (!token || isGuest) { alert("Demo Mode — Upload disabled"); return; }
+    try { await docsApi.upload(file, token); await fetchData(); } catch { alert("Upload failed"); }
   };
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleUpload(e.target.files[0]);
-    }
+    if (e.target.files && e.target.files.length > 0) handleUpload(e.target.files[0]);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
+    e.preventDefault(); setIsDragging(false);
+    if (isGuest) { alert("Demo Mode — Upload disabled"); return; }
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      if (file.type === "application/pdf") {
-        handleUpload(file);
-      }
+      if (file.type === "application/pdf") handleUpload(file);
     }
   };
 
   const handleDeleteDoc = async (docId: string) => {
-    if (!token) return;
-    await docsApi.delete(docId, token);
-    await fetchData();
+    if (!token || isGuest) return;
+    try { await docsApi.delete(docId, token); await fetchData(); } catch {}
   };
 
   const handleNewChat = async (docId: string) => {
+    if (isGuest) { router.push("/chat/demo-chat-1"); return; }
     if (!token) return;
-    const chat = (await chatApi.create({ document_id: docId }, token)) as any;
-    router.push(`/chat/${chat.id}`);
+    try {
+      const chat = (await chatApi.create({ document_id: docId }, token)) as any;
+      router.push(`/chat/${chat.id}`);
+    } catch { alert("Failed to create chat"); }
   };
 
   const initial = user?.name?.charAt(0).toUpperCase() || "J";
@@ -391,7 +393,7 @@ export default function DashboardPage() {
           <span className="button-text">Upload File</span>
         </button>
         <button className="arrow-btn" type="button" onClick={() => documents.length > 0 ? handleNewChat(documents[0].id) : alert('Upload a document first!')}>
-          <span className="circle" aria-hidden="true"><span class="icon arrow"></span></span>
+          <span className="circle" aria-hidden="true"><span className="icon arrow"></span></span>
           <span className="button-text">New Chat</span>
         </button>
       </div>

@@ -18,9 +18,14 @@ import {
 export default function ProfilePage() {
   const { user, token, logout } = useSession(true);
   const [stats, setStats] = useState({ docs: 0, chats: 0 });
+  const isGuest = token === "mock-guest-token-abc";
 
   useEffect(() => {
     if (!token) return;
+    if (isGuest) {
+      setStats({ docs: 3, chats: 2 });
+      return;
+    }
 
     const fetchStats = async () => {
       try {
@@ -33,14 +38,16 @@ export default function ProfilePage() {
           chats: (chats as any[]).length,
         });
       } catch {
-        // silent
+        setStats({ docs: 3, chats: 2 });
       }
     };
 
     fetchStats();
-  }, [token]);
+  }, [token, isGuest]);
 
-  if (!user) return null;
+  const displayUser = user || { name: "Guest User", email: "guest@wayne.com", created_at: new Date().toISOString() };
+
+  if (!user && !isGuest) return null;
 
   const statCards = [
     {
@@ -90,17 +97,17 @@ export default function ProfilePage() {
             
             <div className="flex flex-col items-center flex-1">
               <div className="w-24 h-24 mb-6 rounded-full bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.15)] flex items-center justify-center font-[Orbitron] text-3xl font-bold text-white shadow-[0_0_30px_rgba(255,255,255,0.05)]">
-                {user.name.charAt(0).toUpperCase()}
+                {displayUser.name.charAt(0).toUpperCase()}
               </div>
               
               <h2 className="text-xl font-bold text-white tracking-wide mb-1">
-                {user.name}
+                {displayUser.name}
               </h2>
-              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-6">{user.email}</p>
+              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-6">{displayUser.email}</p>
               
               <div className="flex items-center gap-2 mb-8 text-xs text-[rgba(255,255,255,0.3)] uppercase tracking-wider">
                 <Calendar size={13} />
-                <span>Joined {formatDate(user.created_at)}</span>
+                <span>Joined {formatDate(displayUser.created_at)}</span>
               </div>
             </div>
 

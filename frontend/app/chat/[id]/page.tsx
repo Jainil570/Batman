@@ -35,7 +35,7 @@ export default function ChatPage() {
   const chatId = params.id as string;
   const router = useRouter();
   const { user, token } = useSession(true);
-  const { messages, stream, connected, error, sendMessage, loadMessages } = useChatStream(chatId);
+  const { messages, stream, connected, error, sendMessage, loadMessages, isDemo } = useChatStream(chatId);
   
   const [input, setInput] = useState("");
   const [chatTitle, setChatTitle] = useState("Loading...");
@@ -48,10 +48,25 @@ export default function ChatPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const isGuest = token === "mock-guest-token-abc";
   
   // Load this chat & the sidebar chats list
   useEffect(() => {
     if (!token || !chatId) return;
+
+    if (isGuest || chatId.startsWith("demo-")) {
+      setChatTitle("Machine Learning Notes — Demo");
+      setAllChats([
+        { id: "demo-chat-1", title: "ML Notes — Key Concepts", message_count: 12, updated_at: new Date().toISOString() },
+        { id: "demo-chat-2", title: "DSA Complexity Analysis", message_count: 8, updated_at: new Date().toISOString() },
+      ]);
+      loadMessages([
+        { role: "user" as const, content: "Summarize the key concepts of machine learning from this document", sources: [] },
+        { role: "assistant" as const, content: "## Key Machine Learning Concepts\n\nBased on the document, here are the core concepts:\n\n1. **Supervised Learning** — Training models on labeled data to make predictions\n2. **Unsupervised Learning** — Finding patterns in unlabeled data\n3. **Neural Networks** — Multi-layered architectures inspired by the brain\n4. **Gradient Descent** — Optimization algorithm for minimizing loss functions\n5. **Overfitting vs Underfitting** — The bias-variance tradeoff\n\n> This is a demo response. Deploy the backend to get real AI-powered answers from your documents.", sources: [] },
+      ]);
+      return;
+    }
 
     const loadData = async () => {
       try {
@@ -65,10 +80,12 @@ export default function ChatPage() {
         setAllChats(chatList);
       } catch (err) {
         console.error("Failed to load chat data", err);
+        setChatTitle("Demo Chat");
+        setAllChats([]);
       }
     };
     loadData();
-  }, [token, chatId, loadMessages]);
+  }, [token, chatId, loadMessages, isGuest]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -4,10 +4,22 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export default function HeroPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [isExiting, setIsExiting] = useState(false);
+
+  const handleGuestAccess = () => {
+    const guestData = {
+      user: { id: "guest-123", name: "Guest User", email: "guest@wayne.com", created_at: new Date().toISOString() },
+      access_token: "mock-guest-token-abc",
+    };
+    login(guestData as any);
+    setIsExiting(true);
+    setTimeout(() => router.push("/dashboard"), 600);
+  };
 
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -115,6 +127,28 @@ export default function HeroPage() {
           <h1 className="text-7xl md:text-[12rem] font-fiorello font-black text-white uppercase tracking-normal drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] leading-none mt-2">
             Batman AI
           </h1>
+          <button
+            onClick={handleGuestAccess}
+            style={{
+              marginTop: '2rem',
+              padding: '14px 36px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: '4px',
+              color: '#fff',
+              fontSize: '13px',
+              fontWeight: 500,
+              letterSpacing: '3px',
+              textTransform: 'uppercase' as const,
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              backdropFilter: 'blur(10px)',
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+          >
+            Try Demo →
+          </button>
         </motion.div>
       </main>
 
